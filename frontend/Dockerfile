@@ -1,12 +1,17 @@
-FROM node:20
+# שלב 1 - Build
+FROM node:20 AS build
 
 WORKDIR /app
 
 COPY package*.json ./
-
 RUN npm install
 
 COPY . .
 
-CMD ["npm", "start"]
+RUN npm run build
 
+
+# שלב 2 - Production
+FROM nginx:latest
+
+COPY --from=build /app/dist /usr/share/nginx/html
